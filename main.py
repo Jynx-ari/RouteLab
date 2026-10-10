@@ -21,13 +21,16 @@ goal_ = (ROWS-2, COLS-2)
 
 mode = "wall"
 path = []
+
+visited = set()
+
 def find_path(start, goal, walls):
     queue = deque([start])
     came_from = {start: None}
 
     while queue:
         current = queue.popleft()
-
+        visited.add(current)
         #found destination? maybe idk
         if current == goal:
             path = []
@@ -37,7 +40,7 @@ def find_path(start, goal, walls):
                 path.append(current)
                 current = came_from[current]
             path.reverse()
-            return path
+            return path, visited
         row, col = current
         neighbors = [
         (row-1, col), 
@@ -55,7 +58,7 @@ def find_path(start, goal, walls):
                 continue
             came_from[neighbor] = current
             queue.append(neighbor)
-    return [] #brahh no found?
+    return [], visited #brahh no found?
 
 framerate=60
 running=True
@@ -76,8 +79,9 @@ while running:
             elif event.key == pygame.K_g:
                 mode = "goal" #goal!
             elif event.key == pygame.K_RETURN:
-                path = find_path(starthere_, goal_, walls)
-                print(path)
+                path, visited = find_path(starthere_, goal_, walls)
+                print("Path length: ",len(path))
+                print("Cells explored: ",len(visited))
 
 
         #Mouse clicks goes here!
@@ -119,6 +123,8 @@ while running:
             
             if cell in walls:
                 pygame.draw.rect(screen, (80, 85, 100), rect)
+            if cell in visited:
+                pygame.draw.rect(screen,(100,120,180), rect)
             if cell in path:
                 pygame.draw.rect(screen, (255, 255, 255), rect)
             if cell == starthere_:
