@@ -27,11 +27,15 @@ visited = set()
 def find_path(start, goal, walls):
     queue = deque([start])
     came_from = {start: None}
+    visited = set()
 
     while queue:
         current = queue.popleft()
         visited.add(current)
         #found destination? maybe idk
+
+        yield current, visited, []
+
         if current == goal:
             path = []
 
@@ -40,7 +44,10 @@ def find_path(start, goal, walls):
                 path.append(current)
                 current = came_from[current]
             path.reverse()
+
+            yield None, visited, path
             return path, visited
+
         row, col = current
         neighbors = [
         (row-1, col), 
@@ -58,10 +65,18 @@ def find_path(start, goal, walls):
                 continue
             came_from[neighbor] = current
             queue.append(neighbor)
-    return [], visited #brahh no found?
+    yield None, visited, [] #brahh no found?
+
+
+
 
 framerate=60
 running=True
+
+search_steps = None
+search_running = False
+step_delay_ms = 30 #milisecond
+last_step_time = 0
 
 
 
@@ -79,9 +94,11 @@ while running:
             elif event.key == pygame.K_g:
                 mode = "goal" #goal!
             elif event.key == pygame.K_RETURN:
-                path, visited = find_path(starthere_, goal_, walls)
-                print("Path length: ",len(path))
-                print("Cells explored: ",len(visited))
+                visited = set()
+                path = []
+                search_steps = find_path(starthere_, goal_, walls)
+                search_running = True
+                last_step_time = pygame.time.get_ticks()  # Reset the last step time when starting the search
 
 
         #Mouse clicks goes here!
@@ -94,6 +111,7 @@ while running:
 
             cell = (row, col)
             path = []
+            visited = set()
             if mode == "wall":
                 if cell != starthere_ and cell != goal_:
                     if cell in walls:
@@ -107,6 +125,25 @@ while running:
                 if cell not in walls and cell != starthere_:
                     goal_ = cell
 
+    if search_running:
+        right_now = pygame.time.get_ticks()
+        if right_now - last_step_time >= step_delay_ms:
+            last_step_time = right_now
+            try:
+                current, visited, new_path = next(search_steps)
+                if current is None:
+                    path = new_path
+                    search_running = False
+                    print("Path length: ", len(path))
+                    print("Cells explored: ", len(visited))
+
+                    if path:
+                        print("Path found!")
+                    else:
+                        print("No path found. WHERE PATH!?!?!??")
+            except StopIteration:
+                search_running = False
+                print("Search completed. I guess?")
 
     screen.fill((25, 28, 36))
 
