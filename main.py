@@ -12,26 +12,54 @@ COLS = w // cell_s
 screen = pygame.display.set_mode((w, h))
 pygame.display.set_caption("RouteLab: Grid Example")
 clock = pygame.time.Clock()
+
+
+walls = set()
+starthere_ = (1,1)
+goal_ = (ROWS-2, COLS-2)
+
+mode = "wall"
+
 framerate=60
 running=True
 
-walls = set()
+
+
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = event.pos
-            cell_x = x // cell_s
-            cell_y = y // cell_s
-            cell = (cell_y, cell_x)
-            if cell in walls:
-                walls.remove(cell)
-            else:
-                walls.add(cell)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                mode = "wall"
+            elif event.key == pygame.K_s:
+                mode = "start" #start!
+            elif event.key == pygame.K_g:
+                mode = "goal" #goal!
             
+        #Mouse clicks goes here!
+        if (event.type == pygame.MOUSEBUTTONDOWN and event.button ==1):
+            mouse_x, mouse_y = event.pos
+
+            col = mouse_x // cell_s
+            row = mouse_y // cell_s
+
+            cell = (row, col)
+
+            if mode == "wall":
+                if cell != starthere_ and cell != goal_:
+                    if cell in walls:
+                        walls.remove(cell)
+                    else:
+                        walls.add(cell)
+            elif mode =="start":
+                if cell != goal_ and cell not in walls:
+                    starthere_ = cell
+            elif mode == "goal":
+                if cell not in walls and cell != starthere_:
+                    goal_ = cell
 
 
     screen.fill((25, 28, 36))
@@ -44,10 +72,16 @@ while running:
                 cell_s,
                 cell_s
                 )
-            if (row, col) in walls:
+            
+            cell = (row, col)
+
+            if cell in walls:
                 pygame.draw.rect(screen, (80, 85, 100), rect)
-            else:
-                pygame.draw.rect(screen, (65, 72, 85), rect, 1)
+            if cell == starthere_:
+                pygame.draw.rect(screen, (60, 140, 255), rect)
+            if cell == goal_:
+                pygame.draw.rect(screen, (60, 255, 140), rect)
+            pygame.draw.rect(screen, (65, 72, 85), rect, 1)
     
     pygame.display.flip()
     
