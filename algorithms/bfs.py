@@ -43,4 +43,4 @@ def bfs(start, goal, walls, rows, cols):
             #Remember from neighbor to current so we can backtrack later
             came_from[neighbor] = current
             queue.append(neighbor)
-    return None, visited, []
+    yield None, visited, []

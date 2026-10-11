@@ -1,6 +1,5 @@
-
 import pygame
-from collections import deque
+from algorithms.bfs import bfs
 from noise import generate_noisy
 pygame.init()
 
@@ -39,54 +38,6 @@ last_step_time = 0
 search_result = "Ready"
 
 
-def find_path(start, goal, walls):
-    queue = deque([start])
-    # The start has no parent, so None marks the end of backtracking.
-    came_from = {start: None}
-    visited = set()
-
-    while queue:
-        current = queue.popleft()
-        visited.add(current)
-
-        # Reveal the next explored cell >:3
-        yield current, visited, []
-
-        if current == goal:
-            path = []
-
-            while current is not None:
-                path.append(current)
-                current = came_from[current]
-
-            path.reverse()
-            yield None, visited, path
-            return
-
-        row, col = current
-
-        neighbors = [
-            (row - 1, col),
-            (row + 1, col),
-            (row, col - 1),
-            (row, col + 1),
-        ]
-
-        for neighbor in neighbors:
-            r, c = neighbor
-
-            if not (0 <= r < ROWS):
-                continue
-            if not (0 <= c < COLS):
-                continue
-            if neighbor in walls or neighbor in came_from:
-                continue
-            #Remember from neighbor to current so we can backtrack later
-            came_from[neighbor] = current
-            queue.append(neighbor)
-
-    # No path found >:C
-    yield None, visited, []
 
 
 def reset_search():
@@ -119,8 +70,8 @@ while running:
             elif event.key == pygame.K_RETURN:
                 if not search_running:
                     reset_search()
-                    search_steps = find_path(
-                        starthere_, goal_, walls
+                    search_steps = bfs(
+                        starthere_, goal_, walls, ROWS, COLS
                     )
                     search_running = True
                     last_step_time = pygame.time.get_ticks()
