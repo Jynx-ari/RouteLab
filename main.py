@@ -309,5 +309,3 @@ while running:
     clock.tick(60)
 
 pygame.quit()
-
-print("Hello! for Github source control only this is tempp")
