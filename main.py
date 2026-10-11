@@ -1,7 +1,7 @@
 
 import pygame
 from collections import deque
-
+from noise import generate_noisy
 pygame.init()
 
 # settings and stuffs iduno
@@ -39,6 +39,7 @@ last_step_time = 0
 
 def find_path(start, goal, walls):
     queue = deque([start])
+    # The start has no parent, so None marks the end of backtracking.
     came_from = {start: None}
     visited = set()
 
@@ -78,7 +79,7 @@ def find_path(start, goal, walls):
                 continue
             if neighbor in walls or neighbor in came_from:
                 continue
-
+            #Remember from neighbor to current so we can backtrack later
             came_from[neighbor] = current
             queue.append(neighbor)
 
@@ -120,7 +121,11 @@ while running:
                     )
                     search_running = True
                     last_step_time = pygame.time.get_ticks()
-
+            elif event.key == pygame.K_n:
+                # start to generate those noisy ahh cells
+                walls = generate_noisy(ROWS, COLS, 3)  # noise_level is a percentage
+                walls.discard(starthere_)
+                walls.discard(goal_)
         # mouse controls
         if (
             event.type == pygame.MOUSEBUTTONDOWN
@@ -201,6 +206,7 @@ while running:
         "S: Move start blokc",
         "G: Move goal blok",
         "ENTER: Run the path finder",
+        "N: Generate noisy walls"
     ]
 
     for i, control in enumerate(controls):
@@ -221,6 +227,13 @@ while running:
         "start": "START",
         "goal": "GOAL",
     }
+    
+
+
+
+
+
+
 
     mode_text = font.render(
         f"Current mode: {mode_names[mode]}",
