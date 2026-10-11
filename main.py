@@ -54,7 +54,8 @@ last_path_step_time = 0
 
 
 def reset_search():
-    global path, visited, search_steps, search_running, current_cell    
+    global path, visited, search_steps, search_running, current_cell
+    global search_result, path_idx, path_animating, last_path_step_time
 
     path = []
     visited = set()
@@ -62,6 +63,9 @@ def reset_search():
     search_steps = None
     search_running = False
     search_result = "Ready"
+    path_idx = 0
+    path_animating = False
+    last_path_step_time = 0
 
 
 running = True
