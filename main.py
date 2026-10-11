@@ -35,6 +35,7 @@ search_steps = None
 search_running = False
 step_delay_ms = 30
 last_step_time = 0
+search_result = "Ready"
 
 
 def find_path(start, goal, walls):
@@ -183,8 +184,10 @@ while running:
 
                     if path:
                         print("Path found! YIPEEE")
+                        search_result = "Path found!"
                     else:
                         print("Uh oh.. No path found!")
+                        search_result = "No path found!"
 
             except StopIteration:
                 search_running = False
