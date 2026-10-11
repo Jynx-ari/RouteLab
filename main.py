@@ -10,6 +10,7 @@ grid_top = 100
 legend_space = 30
 
 
+
 Start_color = (60, 140, 255)
 Goal_color = (60, 255, 140)
 Explored_color = (100, 120, 180)
@@ -308,3 +309,5 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
+print("Hello! for Github source control only this is tempp")
