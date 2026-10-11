@@ -54,7 +54,7 @@ last_path_step_time = 0
 
 
 def reset_search():
-    global path, visited, search_steps, search_running, current_cell    
+    global path, visited, search_steps, search_running, current_cell, search_result
 
     path = []
     visited = set()
