@@ -5,12 +5,13 @@ from noise import generate_noisy
 pygame.init()
 
 # settings and stuffs iduno
-w = 800
-h = 760
-cell_s = 40
+w, h = 1000, 800
+cell_s = 30
 grid_top = 100
+legend_space = 30
 
-ROWS = (h - grid_top) // cell_s
+
+ROWS = (h - grid_top - legend_space) // cell_s
 COLS = w // cell_s
 
 screen = pygame.display.set_mode((w, h))
@@ -210,7 +211,7 @@ while running:
         "W: Wall mode!",
         "S: Move start blokc",
         "G: Move goal blok",
-        "ENTER: Run the path finder",
+        "ENTER: Run",
         "N: Generate noisy walls"
     ]
 
