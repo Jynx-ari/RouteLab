@@ -177,7 +177,7 @@ while running:
     if path_animating:
         right_neow = pygame.time.get_ticks()
         if right_neow-last_path_step_time >= path_delay_ms:
-            last_path_step_time = now
+            last_path_step_time = right_neow
             path_idx += 1
             if path_idx >= len(path):
                 path_animating = False
