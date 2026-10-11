@@ -6,9 +6,9 @@ pygame.init()
 
 # settings and stuffs iduno
 w = 800
-h = 680
+h = 760
 cell_s = 40
-grid_top = 80
+grid_top = 100
 
 ROWS = (h - grid_top) // cell_s
 COLS = w // cell_s
@@ -95,6 +95,7 @@ def reset_search():
     visited = set()
     search_steps = None
     search_running = False
+    search_result = "Ready"
 
 
 running = True
@@ -167,6 +168,7 @@ while running:
 
     # move BFS one step at a time
     if search_running:
+        search_result = "Searching..."
         now = pygame.time.get_ticks()
 
         if now - last_step_time >= step_delay_ms:
@@ -244,7 +246,12 @@ while running:
         (255, 220, 120),
     )
     screen.blit(mode_text, (420, 42))
-
+    result_text = font.render(
+        f"Search result: {search_result}",
+        True,
+        (255, 220, 120),
+    )
+    screen.blit(result_text, (420, 64))
     # render grid cells
     for row in range(ROWS):
         for col in range(COLS):
