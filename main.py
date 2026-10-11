@@ -10,6 +10,14 @@ grid_top = 100
 legend_space = 30
 
 
+Start_color = (60, 140, 255)
+Goal_color = (60, 255, 140)
+Explored_color = (100, 120, 180)
+Path_color = (255, 255, 51)
+Wall_color = (80, 85, 100)
+current_c_color = (0, 220, 255)
+
+
 ROWS = (h - grid_top - legend_space) // cell_s
 COLS = w // cell_s
 
@@ -29,22 +37,27 @@ goal_ = (ROWS - 2, COLS - 2)
 mode = "wall"
 path = []
 visited = set()
+current_cell = None
 
-# BFS animation thingy
+# algorithm animation thingy
 search_steps = None
 search_running = False
-step_delay_ms = 30
+step_delay_ms = 25
 last_step_time = 0
 search_result = "Ready"
-
-
+#--path animation stuff
+path_idx = 0
+path_delay_ms = 20
+path_animating = False
+last_path_step_time = 0
 
 
 def reset_search():
-    global path, visited, search_steps, search_running
+    global path, visited, search_steps, search_running, current_cell    
 
     path = []
     visited = set()
+    current_cell = None
     search_steps = None
     search_running = False
     search_result = "Ready"
@@ -75,17 +88,22 @@ while running:
                     )
                     search_running = True
                     last_step_time = pygame.time.get_ticks()
+                else:
+                    search_running = False
             elif event.key == pygame.K_n:
                 # start to generate those noisy ahh cells
+                reset_search()
                 walls = generate_noisy(ROWS, COLS, 3)  # noise_level is a percentage
                 walls.discard(starthere_)
                 walls.discard(goal_)
+
         # mouse controls
         if (
             event.type == pygame.MOUSEBUTTONDOWN
             and event.button == 1
         ):
             mouse_x, mouse_y = event.pos
+        
 
             # ignore clicks in the control panel
             if mouse_y < grid_top:
@@ -128,9 +146,13 @@ while running:
 
             try:
                 current, visited, new_path = next(search_steps)
-
+                current_cell = current
                 if current is None:
                     path = new_path
+
+                    path_idx = 0
+                    path_animating = bool(path)    
+                    last_path_step_time = pygame.time.get_ticks()                  
                     search_running = False
 
                     print("Path length:", len(path))
@@ -145,6 +167,16 @@ while running:
 
             except StopIteration:
                 search_running = False
+
+
+    if path_animating:
+        right_neow = pygame.time.get_ticks()
+        if right_neow-last_path_step_time >= path_delay_ms:
+            last_path_step_time = now
+            path_idx += 1
+            if path_idx >= len(path):
+                path_animating = False
+
 
     # renderrr background
     screen.fill((25, 28, 36))
@@ -218,27 +250,30 @@ while running:
 
             if cell in walls:
                 pygame.draw.rect(
-                    screen, (80, 85, 100), rect
+                    screen, Wall_color, rect
                 )
 
             if cell in visited:
                 pygame.draw.rect(
-                    screen, (100, 120, 180), rect
+                    screen, Explored_color, rect
                 )
-
-            if cell in path:
+            if cell == current_cell:
                 pygame.draw.rect(
-                    screen, (255, 255, 255), rect
+                    screen, current_c_color, rect
+                )
+            if cell in path[:path_idx]:
+                pygame.draw.rect(
+                    screen, Path_color, rect
                 )
 
             if cell == starthere_:
                 pygame.draw.rect(
-                    screen, (60, 140, 255), rect
+                    screen, Start_color, rect
                 )
 
             if cell == goal_:
                 pygame.draw.rect(
-                    screen, (60, 255, 140), rect
+                    screen, Goal_color, rect
                 )
 
             pygame.draw.rect(
@@ -249,11 +284,11 @@ while running:
     legend_y = grid_top + ROWS * cell_s + 4
 
     legend = [
-        ("Start", (60, 140, 255)),
-        ("Goal", (60, 255, 140)),
-        ("Explored", (100, 120, 180)),
-        ("Path", (255, 255, 255)),
-        ("Wall", (80, 85, 100)),
+        ("Start", Start_color),
+        ("Goal", Goal_color),
+        ("Explored", Explored_color),
+        ("Path", Path_color),
+        ("Wall", Wall_color),
     ]
 
     for i, (label, color) in enumerate(legend):
