@@ -3,6 +3,7 @@ import heapq
 def dijkstra(start, goal, walls, rows, cols, terrain_costs=None):
     if terrain_costs is None:
         terrain_costs={}
+        print("no costs")
 
     priority_queue = [(0, start)]
     costs = {start: 0}
